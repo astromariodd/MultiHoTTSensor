@@ -780,28 +780,28 @@ static void hottV4SendText(uint8_t row, uint8_t col, uint8_t page) {
 // =================================================================================
 void hottV4HandleDefaultTextFrame(byte key) {
   
-  static uint8_t row  = 2;  // Zeile im Textmenü
-  static uint8_t col  = 0;  // Spalte im Textmenü
-  static uint8_t page = 1;  // Seite im Textmenü  
+  static uint8_t row  = 2;  // default row
+  static uint8_t col  = 0;  // default column
+  static uint8_t page = 1;  // default page  
   
-  // Textausgabe 
+  // text pages 
   switch (key) {
     
-    // *** Seitensteuerung rechts ****
+    // *** next page ****
     case HOTTV4_BUTTON_NEXT:
       if (page < MAXPAGENO) {
         page++;
       }
       break;
       
-    // *** Seitensteuerung /links ****
+    // *** previous page ****
     case HOTTV4_BUTTON_PREV:
      if (page > 1) {
        page--;
       }
       break;
       
-    // ***  hoch/runter bzw. Wert +/- *** 
+    // ***  down/up or value +/- *** 
     case HOTTV4_BUTTON_DEC: {
       if (col) {
         if (page==PAGE_ALARM) {
@@ -853,9 +853,9 @@ void hottV4HandleDefaultTextFrame(byte key) {
         }  
       } else {
         if (page>=PAGE_PID) {
-          row = row > 1 ? row - 1 : row;  //auf Seite 4 beginnen Daten mit Zeile 1
+          row = row > 1 ? row - 1 : row;  // at page #4 Data start at line 1
         } else { //<>4
-          row = row > 2 ? row - 1 : row;  //Daten beginnen mit Zeile 2
+          row = row > 2 ? row - 1 : row;  //normally data start at line 2
         }
       }
       break;
@@ -914,14 +914,14 @@ void hottV4HandleDefaultTextFrame(byte key) {
       }
       break;
       
-    // *** Eingabe in Feld starten bzw. beenden *** 
+    // *** start editing in a field *** 
     case HOTTV4_BUTTON_SET:
     
       if (page==PAGE_ALARM) {
         // Spalte toggeln
         col = col? col=0 : col=1;
       } 
-      else if (!(ARMED)) {  //Multiwii-Einstellungen änderbar
+      else if (!(ARMED)) {  //Multiwii setup changeable if not armed
         if ((page==PAGE_PID) || (page==PAGE_RCTUNING)) {
           if (col) {
             col = 0;
@@ -937,7 +937,7 @@ void hottV4HandleDefaultTextFrame(byte key) {
   hottV4SendText(row, col, page);  
 }
 
-// alle Sensoren laufen über den gleichen EAM-Textframe
+// all sensors use the EAM textframe code
 void handleEAMTextFrame(byte key) {
   hottV4HandleDefaultTextFrame(key);  
 }
@@ -999,7 +999,7 @@ void hottV4SendTelemetry() {
             hottV4_state = IDLE;
         }
       } else if (hottV4_state == BINARY ) {
-        // Ausgabe Binärpakete je Modul
+        // output binary packets
         switch (c) {
           #ifdef HOTTV4_EAM
           
@@ -1032,7 +1032,7 @@ void hottV4SendTelemetry() {
             hottV4_state = IDLE;
         }
       } else if (hottV4_state == TEXT) {
-        // Ausgabe Textpakete je Modul
+        // output of text pages
 
         byte id_sensor = (c >> 4); // High-Nibble = Sensor
         byte id_key = c & 0x0f;    // Low-Nibble = Key
