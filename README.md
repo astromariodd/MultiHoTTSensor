@@ -11,4 +11,4 @@ Current status of development
 * reads single cell voltage with 3S-4S support
 * reads it´s own baro via I2C
 * talks with MultiWii over serial protocol
-* reads and writes MultiWii PID
+* reads and writes MultiWii PID and RC values
